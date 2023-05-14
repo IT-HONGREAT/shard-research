@@ -1,32 +1,20 @@
-import jwt
-from django.conf import settings
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.auth.tokens import default_token_generator
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import transaction
-from django.template import loader
-from django.utils import timezone
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from app.user.models import User
-from app.user.social_adapters import SocialAdapter
 from app.user.v1.examples import login_examples
-from app.user.validators import validate_password
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "email", "phone"]
-
-
+        fields = [
+            "id",
+            "email",
+        ]
 
 
 @extend_schema_serializer(examples=login_examples)
@@ -68,11 +56,17 @@ class UserLoginSerializer(serializers.Serializer):
         return validated_data
 
 
-
-
-
 class UserMeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "email"]
 
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "email",
+            "location",
+        ]

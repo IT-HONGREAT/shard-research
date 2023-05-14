@@ -13,4 +13,4 @@ venv
 media
 .env
 .cache
-# .idea
+.idea

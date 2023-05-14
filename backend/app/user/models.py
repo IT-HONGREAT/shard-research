@@ -1,9 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as DjangoUserManager
-from django.core.validators import MinLengthValidator, validate_integer
 from django.db import models
 
-from app.common.models import BaseModel, BaseModelMixin
+from app.common.models import BaseModelMixin
 
 
 class UserManager(DjangoUserManager):
@@ -37,14 +36,10 @@ class User(BaseModelMixin, AbstractUser):
     last_name = None
     username = None
     email = models.EmailField(verbose_name="이메일", unique=True)
-    phone = models.CharField(
-        verbose_name="휴대폰", max_length=11, blank=True, default="", validators=[validate_integer, MinLengthValidator(10)]
-    )
+    location = models.CharField(verbose_name="지역", max_length=32)  # KO,US
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []  # 빈값 유지
-    VERIFY_FIELDS = []  # 회원가입 시 검증 받을 필드 (email, phone)
-    REGISTER_FIELDS = ["phone", "password"]  # 회원가입 시 입력 받을 필드 (email, phone, password)
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
@@ -55,3 +50,13 @@ class User(BaseModelMixin, AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        database_mapper = {
+            "KO": "shard_1",
+            "US": "shard_2",
+        }
+        obj_location = self.location
+        using_db = database_mapper.get(str(obj_location), "default")
+        kwargs["using"] = using_db
+        super().save(*args, **kwargs)

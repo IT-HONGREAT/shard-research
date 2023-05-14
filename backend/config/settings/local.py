@@ -15,42 +15,40 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # local database
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'shard_db_1',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'shard_1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'shard_db_1',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'shard_2': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'shard_db_2',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5433',
+    },
 }
 
-# remote database
-# DATABASE_SECRET = get_secret(f'{PROJECT_NAME}/db/dev')
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': DATABASE_SECRET['dbname'],
-#         'USER': DATABASE_SECRET['username'],
-#         'PASSWORD': DATABASE_SECRET['password'],
-#         'HOST': DATABASE_SECRET['host'],
-#         'PORT': DATABASE_SECRET['port'],
-#     },
-#     'reader': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': DATABASE_SECRET['dbname'],
-#         'USER': DATABASE_SECRET['username'],
-#         'PASSWORD': DATABASE_SECRET['password'],
-#         'HOST': DATABASE_SECRET['host'].replace('.cluster-', '.cluster-ro-'),
-#         'PORT': DATABASE_SECRET['port'],
-#     },
-# }
+SHARD_GROUP = {
+    'default': {
+        'NAME': 'shard_1',
+        'SHARDS': ['shard_1', 'shard_2'],
+    },
+}
 
 
-# S3
-AWS_REGION = "ap-northeast-2"
-AWS_STORAGE_BUCKET_NAME = f"{PROJECT_NAME}-prod-bucket"
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com"
-AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=864000"}
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = "public-read"
-AWS_S3_SECURE_URLS = True
 
 
 # REDIS

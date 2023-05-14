@@ -149,7 +149,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # DATABASE ROUTER
-DATABASE_ROUTERS = ["config.router.Router"]
+DATABASE_ROUTERS = [
+    "config.router.ShardDBRouter",
+]
 
 
 # JWT

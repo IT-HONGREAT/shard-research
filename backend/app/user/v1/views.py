@@ -1,5 +1,5 @@
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import status
+from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,34 +8,51 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from app.user.models import User
-from app.user.v1.serializers import (
-    UserLoginSerializer,
-    UserSerializer,
-)
+from app.user.v1.filters import UserFilter
+from app.user.v1.serializers import UserLoginSerializer, UserRegisterSerializer, UserSerializer
 
 
 @extend_schema_view(
+    list=extend_schema(summary="유저 목록 조회"),
     me=extend_schema(summary="유저 조회"),
     login=extend_schema(summary="유저 로그인"),
     refresh=extend_schema(summary="유저 리프레시"),
+    register=extend_schema(summary="유저 생성"),
 )
 class UserViewSet(
+    mixins.ListModelMixin,
     GenericViewSet,
 ):
+
     queryset = User.objects.all()
+    filter_class = UserFilter
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        location_params = self.request.GET.get("location")
+        database_mapper = {
+            "KO": "shard_1",
+            "US": "shard_2",
+        }
+        using_db = database_mapper.get(location_params, "default")
+        return queryset.using(using_db)
 
     def get_serializer_class(self):
+        if self.action == "list":
+            return UserSerializer
         if self.action == "me":
             return UserSerializer
         if self.action == "login":
             return UserLoginSerializer
         if self.action == "refresh":
             return TokenRefreshSerializer
+        if self.action == "register":
+            return UserRegisterSerializer
 
         raise Exception
 
     def get_permissions(self):
-        if self.action in ["me", "logout"]:
+        if self.action == "me":
             return [IsAuthenticated()]
         return []
 
@@ -54,7 +71,6 @@ class UserViewSet(
     def login(self, request, *args, **kwargs):
         return self._create(request, *args, **kwargs)
 
-
     @action(methods=["POST"], detail=False)
     def refresh(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -68,4 +84,3 @@ class UserViewSet(
     def register(self, request, *args, **kwargs):
 
         return self._create(request, *args, **kwargs)
-

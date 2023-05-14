@@ -3,7 +3,6 @@ from django.contrib import admin
 from app.user.models import User
 
 
-
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     search_fields = ["email"]
@@ -25,4 +24,3 @@ class UserAdmin(admin.ModelAdmin):
         instance.save()
 
         return instance
-
