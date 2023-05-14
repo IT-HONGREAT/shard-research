@@ -7,10 +7,7 @@ application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
         "websocket": TokenAuthMiddlewareStack(
-            URLRouter(
-                [
-                ]
-            ),
+            URLRouter([]),
         ),
     }
 )

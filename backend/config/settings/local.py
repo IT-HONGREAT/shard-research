@@ -4,7 +4,6 @@ import boto3
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from config.secrets import get_secret
 from config.settings.base import *
 
 DEBUG = True
@@ -15,57 +14,37 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # local database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shard_db_1',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "shard_db_1",
+        "USER": "postgres",
+        "PASSWORD": "password",
+        "HOST": "localhost",
+        "PORT": "5432",
     },
-    'shard_1': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shard_db_1',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '5432',
+    "shard_1": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "shard_db_1",
+        "USER": "postgres",
+        "PASSWORD": "password",
+        "HOST": "localhost",
+        "PORT": "5432",
     },
-    'shard_2': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shard_db_2',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '5433',
+    "shard_2": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "shard_db_2",
+        "USER": "postgres",
+        "PASSWORD": "password",
+        "HOST": "localhost",
+        "PORT": "5433",
     },
 }
 
 SHARD_GROUP = {
-    'default': {
-        'NAME': 'shard_1',
-        'SHARDS': ['shard_1', 'shard_2'],
-    },
-}
-
-
-
-
-# REDIS
-REDIS_HOST = "localhost"
-
-# CHANNELS
-CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    }
-}
-
-# CELERY
-CELERY_BROKER_URL = f"sqs://"
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    "region": "ap-northeast-2",
-    "queue_name_prefix": f"{PROJECT_NAME}-dev-",
+        "NAME": "shard_1",
+        "SHARDS": ["shard_1", "shard_2"],
+    },
 }
 
 
